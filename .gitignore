@@ -1,0 +1,5 @@
+# Ignorar node_modules en cualquier parte del proyecto
+backend/node_modules/
+frontend/node_modules/
+# Ignorar archivos de entorno
+backend/src/.env
