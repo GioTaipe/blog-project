@@ -1,33 +1,53 @@
-📝 Blog Project
-Un blog donde los usuarios pueden registrarse, iniciar sesión, crear publicaciones con imágenes, comentar y dar likes.
-Incluye gestión de perfil y almacenamiento de imágenes en la nube.
+📝 Blog App
 
-🚀 Tecnologías utilizadas
-🛠️ Backend
-Node.js + Express
+Una aplicación de blog completa con autenticación de usuarios, sistema de publicaciones, comentarios, likes, gestión de perfiles y almacenamiento de imágenes en la nube.
 
-JWT (JSON Web Tokens) para autenticación
+🚀 Tecnologías Utilizadas
 
-bcryptjs para el hash de contraseñas
+Backend: Node.js, Express.js ⚙️
 
-AWS S3 para almacenar imágenes
+Autenticación: JSON Web Tokens (JWT) 🔐, bcryptjs
 
-MongoDB + Mongoose
+Base de Datos: MongoDB (Mongoose) 🗃️
 
-API REST
+Almacenamiento de Imágenes: Amazon AWS S3 ☁️
 
-🎨 Frontend
-Vue 3
+Frontend: Vue 3 con Vuetify 🎨
 
-Vuetify (UI components)
+Arquitectura: API RESTful 🌐
 
-JavaScript
+Lenguaje: JavaScript 📜
 
-✨ Funcionalidades principales
-✅ Registro y login de usuarios (JWT)
-✅ Sección POST: crear publicaciones, subir imágenes, dar likes, comentar publicaciones de otros usuarios
-✅ Sección PROFILE: ver datos personales (nombre, email, foto), editar datos, gestionar y eliminar publicaciones propias
-✅ LOGOUT para cerrar sesión de manera segura
-✅ Almacenamiento de imágenes de publicaciones en AWS S3
-✅ Passwords encriptadas con bcryptjs
-✅ Las rutas del frontend están protegidas con Vue Router y guards para permitir solo el acceso de usuarios autenticados
+✨ Características
+
+🔑 Autenticación de Usuarios
+
+Registro de usuarios con nombre, correo y contraseña.
+
+Login seguro usando JWT y bcryptjs.
+
+Logout y persistencia de sesión.
+
+🙍‍♂️ Perfil de Usuario
+
+Ver información del perfil: nombre, email, foto.
+
+Editar información personal y foto de perfil.
+
+Ver y eliminar publicaciones propias.
+
+📝 Publicaciones
+
+Crear publicaciones con título, contenido y foto (opcional).
+
+Almacenamiento de imágenes en AWS S3.
+
+Listado de publicaciones.
+
+Eliminar publicaciones propias.
+
+💬 Interacción Social
+
+Comentar publicaciones de otros usuarios.
+
+Dar y quitar likes ❤️
