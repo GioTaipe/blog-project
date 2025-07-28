@@ -1,69 +1,62 @@
 <template>
-  <v-container>
+  <v-container class="custom-container">
     <!-- SECCIÓN PUBLICAR POSTS -->
-    <v-card class="mb-6">
-      <v-textarea v-model="newPost.content" label="¿Qué estás pensando?" rows="3" auto-grow outlined></v-textarea>
+    <div class="form-container mb-6">
+      <div class="title">¿Qué estás pensando?</div>
+      <v-textarea v-model="newPost.content" rows="3" auto-grow outlined></v-textarea>
       <input ref="fileInput" type="file" accept="image/*,video/*" style="display: none" @change="handleFileChange" />
-      <v-row class="align-center justify-space-between mt-2">
-        <v-col cols="auto" class="d-flex align-center">
-          <v-btn icon @click="triggerFileSelect">
-            <v-icon>mdi-camera</v-icon>
-          </v-btn>
-          <span v-if="newPost.fileName" class="ml-2">{{ newPost.fileName }}</span>
-        </v-col>
-        <v-col cols="auto">
-          <v-btn color="primary" @click="publishPost">Publicar</v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
+      <div class="file-actions">
+        <v-btn icon @click="triggerFileSelect">
+          <v-icon>mdi-camera</v-icon>
+        </v-btn>
+        <span v-if="newPost.fileName" class="ml-2">{{ newPost.fileName }}</span>
+        <v-spacer />
+        <v-btn class="post-button" @click="publishPost">Publicar</v-btn>
+      </div>
+    </div>
 
     <!-- SECCIÓN MOSTRAR POSTS -->
     <v-row justify="center">
-      <v-col cols="12" md="12" v-for="post in posts.filter(Boolean)" :key="post._id">
-        <v-card class="mb-4">
-          <v-card-subtitle class="d-flex align-center px-4 pb-1">
-            <v-avatar size="36" class="mr-2" style="margin-top: 8px;">
+      <v-col cols="12" md="8" v-for="post in posts.filter(Boolean)" :key="post._id">
+        <div class="form-container mb-4">
+          <div class="post-header">
+            <v-avatar size="36" class="mr-2">
               <v-img :src="post.authorId?.profileImage || '/avatars/avatar-default.png'" />
             </v-avatar>
-            <span>
-              {{ post.authorId?.name }} - {{ formatDate(post.createdAt) }}
-            </span>
+            <span>{{ post.authorId?.name }} - {{ formatDate(post.createdAt) }}</span>
+          </div>
 
-          </v-card-subtitle>
-          <v-img v-if="post.fileUrl" :src="post.fileUrl" class="rounded-lg mx-auto my-2" width="220" height="220"
-            cover />
-          <v-card-text>{{ post.content }}</v-card-text>
-          <v-btn @click="handleLike(post._id)" :color="isLikedByUser(post)" small class="mt-2 mb-2">
-            ❤️ {{ post.likes.length }}
-          </v-btn>
-          <!-- SECCIÓN MOSTRAR COMENTARIOS Y COMENTAR -->
-          <v-btn @click="toggleComments(post._id)">
-            {{ visibleComments[post._id] ? 'Ocultar comentarios' : 'Ver comentarios' }}
-          </v-btn>
+          <v-img v-if="post.fileUrl" :src="post.fileUrl" class="post-image" cover />
+
+          <div class="post-content">{{ post.content }}</div>
+
+          <div class="post-actions">
+            <v-btn @click="handleLike(post._id)" :color="isLikedByUser(post)" class="post-button">
+              ❤️ {{ post.likes.length }}
+            </v-btn>
+
+            <v-btn @click="toggleComments(post._id)" class="post-button">
+              {{ visibleComments[post._id] ? 'Ocultar comentarios' : 'Ver comentarios' }}
+            </v-btn>
+          </div>
+
           <v-expand-transition>
             <div v-if="visibleComments[post._id]">
-              <!-- TEXTAREA PARA COMENTAR -->
-              <v-textarea v-model="post.newComment" label="Escribe un comentario..." rows="2" outlined dense
-                class="mt-2"></v-textarea>
-              <v-btn color="primary" small class="mt-1 mb-2"
-                @click="submitComment(post._id, post.newComment)">Comentar</v-btn>
+              <v-textarea v-model="post.newComment" label="Escribe un comentario..." rows="2" outlined dense class="mt-2"></v-textarea>
+              <v-btn class="post-button" small @click="submitComment(post._id, post.newComment)">Comentar</v-btn>
 
-              <!-- LISTA DE COMENTARIOS -->
               <v-list dense>
                 <v-list-item v-for="comment in (post.comments || [])" :key="comment._id">
                   <v-list-item-content>
-                    <v-list-item-title class="text-subtitle-2">
-                      <v-avatar size="28" class="mr-2" style="margin: 6px;">
+                    <v-list-item-title class="text-subtitle-2 comment-header">
+                      <v-avatar size="28" class="mr-2">
                         <v-img :src="comment.author.profileImage || '/avatars/avatar-default.png'" />
                       </v-avatar>
                       <span>{{ comment.author.name }} - {{ formatDate(comment.createdAt) }}</span>
                       <v-spacer></v-spacer>
-
-                      <!-- Mostrar botón solo si es del usuario logueado -->
-                      <v-btn v-if="comment.author._id === currentUserId" 
-                        @click="removeComment(post._id, comment._id)">
-                        eliminar
-                      </v-btn>
+                      <v-icon v-if="comment.author._id === currentUserId" class="delete-icon" small @click="removeComment(post._id, comment._id)">
+                        mdi-delete
+                      </v-icon>
                     </v-list-item-title>
                     <v-list-item-subtitle>{{ comment.content }}</v-list-item-subtitle>
                   </v-list-item-content>
@@ -71,7 +64,7 @@
               </v-list>
             </div>
           </v-expand-transition>
-        </v-card>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -210,3 +203,99 @@ const handleLike = async (postId) => {
   }
 }
 </script>
+<style scoped>
+.custom-container {
+  padding-top: 32px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 780px;
+  margin: auto;
+  border-radius: 0.75rem;
+  background-color: #1f2937;
+  padding: 1.5rem;
+  color: #f9fafb;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 10px 15px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.post-image {
+  border-radius: 0.5rem;
+  margin: 1rem auto;
+  max-width: 220px;
+  height: 220px;
+}
+
+.post-content {
+  margin-bottom: 1rem;
+}
+
+.post-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.post-button {
+  background-color: #a5b4fc;
+  color: #111827;
+  font-weight: 500;
+  text-transform: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.post-button:hover {
+  background-color: #818cf8;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #f87171;
+  font-size: 18px;
+  margin-left: 8px;
+  transition: color 0.2s ease;
+}
+
+.delete-icon:hover {
+  color: #ef4444;
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+}
+</style>
