@@ -102,7 +102,13 @@ const avatars = [
   'Avatar1.png',
   'Avatar2.png',
   'Avatar3.png',
-  'Avatar4.png'
+  'Avatar4.png',
+  'Avatar5.png',
+  'Avatar6.png',
+  'Avatar7.png',
+  'Avatar8.png',
+  'Avatar9.png',
+  'Avatar10.png'
 ]
 
 const editForm = ref({
@@ -161,17 +167,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.rounded-circle {
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.rounded-circle:hover {
-  transform: scale(1.05);
-}
-</style>
-<style scoped>
 .custom-container {
   padding-top: 32px;
 }
@@ -181,10 +176,10 @@ onMounted(async () => {
   max-width: 780px;
   margin: auto;
   border-radius: 0.75rem;
-  background-color: #1f2937;
+  background-color: #C3DAC3; /* fondo suave */
   padding: 1.5rem;
-  color: #f9fafb;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 10px 15px rgba(0, 0, 0, 0.3);
+  color: #6B6054; /* texto principal */
+  box-shadow: 0 0 0 1px rgba(107, 96, 84, 0.1), 0 10px 15px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
 
@@ -192,15 +187,17 @@ onMounted(async () => {
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 1rem;
+  color: #6B6054;
 }
 
 .post-content {
   margin: 1rem 0;
+  color: #6B6054;
 }
 
 .post-button {
-  background-color: #a5b4fc;
-  color: #111827;
+  background-color: #A1B0AB;
+  color: #fff;
   font-weight: 500;
   text-transform: none;
   border-radius: 6px;
@@ -208,7 +205,7 @@ onMounted(async () => {
 }
 
 .post-button:hover {
-  background-color: #818cf8;
+  background-color: #929487;
 }
 
 .rounded-circle {
@@ -221,3 +218,4 @@ onMounted(async () => {
   transform: scale(1.05);
 }
 </style>
+

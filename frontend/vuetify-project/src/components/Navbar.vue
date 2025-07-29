@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar app flat class="custom-navbar">
-    <v-app-bar-title class="navbar-title">POSTEA</v-app-bar-title>
+  <v-app-bar style="background-color: #C3DAC3;" app flat class="custom-navbar">
+    <img src="/favicon.ico" alt="Logo POSTEA" class="logo-login" />
     <v-spacer />
     <div class="nav-links">
       <router-link to="/Posts" class="nav-btn">Posts</router-link>
@@ -23,20 +23,30 @@ const logout = () => {
   router.push('/Login')
 }
 </script>
-
 <style>
+.logo-login {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  border-radius: 50%;
+  background: #D5ECD4;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.11);
+}
+
 .navbar-title {
   font-family: 'Press Start 2P', monospace;
   font-size: 0.75rem;
-  color: #f9fafb;
+  color: #6B6054;
   letter-spacing: 4px;
   margin: 0;
   white-space: nowrap;
 }
 
 .custom-navbar {
-  background-color: #1f2937;
-  height: 56px;
+  background-color: #C3DAC3;
+  height: 60px;
   padding: 0 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -55,7 +65,7 @@ const logout = () => {
   background-color: transparent;
   border: none;
   padding: 10px 12px;
-  color: #f9fafb;
+  color: #6B6054;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.2s ease;
@@ -66,7 +76,8 @@ const logout = () => {
 
 .nav-btn:hover,
 .nav-btn:focus {
-  background-color: #21262c;
+  background-color: #A1B0AB;
+  color: #fff;
 }
 
 @media (max-width: 600px) {
@@ -81,3 +92,4 @@ const logout = () => {
   }
 }
 </style>
+

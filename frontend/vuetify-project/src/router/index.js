@@ -12,6 +12,7 @@ import Profile from '@/pages/Profile.vue'
 import Login from '@/pages/Login.vue'
 
 const routes = [
+  { path: '/', redirect: '/Login' },
   { path: '/Login', component: Login },
   { path: '/Posts', component: Posts, meta: { requiresAuth: true } },
   { path: '/Profile', component: Profile, meta: { requiresAuth: true } }
