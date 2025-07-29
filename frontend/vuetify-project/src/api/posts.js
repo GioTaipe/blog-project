@@ -4,7 +4,6 @@ const API_BASE = 'http://localhost:3001/api'
 export async function getPosts() {
   const res = await fetch(`${API_BASE}/articles/getAllArticles`)
   const data = await res.json()
-  console.log("🔄 Respuesta del servidor al obtener posts:", data);
   
   if (!res.ok) throw new Error(data.message || 'Error al obtener posts')
   return data
@@ -25,7 +24,6 @@ export async function createPost(post) {
     body: formData
   })
   const data = await res.json()
-  console.log("🔄 Respuesta del servidor al crear post:", data);
   
   if (!res.ok) throw new Error(data.message || 'Error al crear el post')
   return data
@@ -58,7 +56,7 @@ export async function deletePostApi(id) {
 }
 // Añadir o eliminar un like a un post
 export async function toggleLike(postId, userId) {
-  console.log(`🔄 Toggle like for post ${postId} by user ${userId}`);
+  
   const token = localStorage.getItem('token')
   const response = await fetch(`${API_BASE}/articles/${postId}/like`, {
     method: 'POST',

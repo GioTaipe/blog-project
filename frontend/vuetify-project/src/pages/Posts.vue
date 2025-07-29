@@ -213,10 +213,10 @@ const handleLike = async (postId) => {
   max-width: 780px;
   margin: auto;
   border-radius: 0.75rem;
-  background-color: #1f2937;
+  background-color: #C3DAC3; /* fondo principal del contenedor */
   padding: 1.5rem;
-  color: #f9fafb;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 10px 15px rgba(0, 0, 0, 0.3);
+  color: #6B6054; /* texto principal */
+  box-shadow: 0 0 0 1px rgba(107, 96, 84, 0.1), 0 10px 15px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
 
@@ -225,6 +225,7 @@ const handleLike = async (postId) => {
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 1rem;
+  color: #6B6054;
 }
 
 .file-actions {
@@ -245,10 +246,12 @@ const handleLike = async (postId) => {
   margin: 1rem auto;
   max-width: 220px;
   height: 220px;
+  background-color: #D5ECD4;
 }
 
 .post-content {
   margin-bottom: 1rem;
+  color: #6B6054;
 }
 
 .post-actions {
@@ -260,8 +263,8 @@ const handleLike = async (postId) => {
 }
 
 .post-button {
-  background-color: #a5b4fc;
-  color: #111827;
+  background-color: #A1B0AB;
+  color: #fff;
   font-weight: 500;
   text-transform: none;
   border-radius: 6px;
@@ -269,7 +272,7 @@ const handleLike = async (postId) => {
 }
 
 .post-button:hover {
-  background-color: #818cf8;
+  background-color: #929487;
 }
 
 .comment-header {

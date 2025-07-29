@@ -2,11 +2,7 @@
   <v-container class="fill-height" fluid>
     <v-row justify="center" align="center">
       <div class="form-container">
-        <img 
-          src="/icon.png" 
-          alt="Logo POSTEA"
-          class="logo-login"
-        />
+        <img src="/favicon.ico" alt="Logo POSTEA" class="logo-login" />
         <div class="title">
           {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
         </div>
@@ -97,20 +93,20 @@ const handleSubmit = async () => {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: #e3f2fd;
+  background: #D5ECD4;
   object-fit: cover;
   margin: 0 auto 1.2rem auto;
   display: block;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.11);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.11);
 }
 
 .form-container {
   width: 100%;
   max-width: 420px;
   border-radius: 0.75rem;
-  background-color: #1f2937;
+  background-color: #D5ECD4;
   padding: 2rem;
-  color: #f9fafb;
+  color: #6B6054;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 10px 15px rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
 }
@@ -119,6 +115,7 @@ const handleSubmit = async () => {
   text-align: center;
   font-size: 1.6rem;
   font-weight: 700;
+  color: #6B6054;
 }
 
 .form {
@@ -132,33 +129,33 @@ const handleSubmit = async () => {
 
 .input-group label {
   display: block;
-  color: #9ca3af;
+  color: #6B6054;
   margin-bottom: 4px;
 }
 
 .input-group input {
   width: 100%;
   border-radius: 0.375rem;
-  border: 1px solid #374151;
+  border: 1px solid #A1B0AB;
   outline: none;
-  background-color: #111827;
+  background-color: #C3DAC3;
   padding: 0.75rem 1rem;
-  color: #f9fafb;
+  color: #2e2e2e;
   transition: border-color 0.2s ease;
 }
 
 .input-group input:focus {
-  border-color: #4f46e5;
+  border-color: #929487;
 }
 
 .sign {
   margin-top: 1.5rem;
   display: block;
   width: 100%;
-  background-color: #6366f1;
+  background-color: #929487;
   padding: 0.75rem;
   text-align: center;
-  color: #111827;
+  color: #fff;
   border: none;
   border-radius: 0.375rem;
   font-weight: 600;
@@ -167,25 +164,25 @@ const handleSubmit = async () => {
 }
 
 .sign:hover {
-  background-color: #4f46e5;
+  background-color: #6B6054;
 }
 
 .signup {
   text-align: center;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: #6B6054;
   margin-top: 1.5rem;
 }
 
 .signup a {
-  color: #f9fafb;
+  color: #6B6054;
   text-decoration: none;
   font-size: 14px;
 }
 
 .signup a:hover {
   text-decoration: underline;
-  color: #c084fc;
+  color: #929487;
 }
 
 /* ✅ Responsive */
@@ -210,3 +207,4 @@ const handleSubmit = async () => {
   }
 }
 </style>
+
