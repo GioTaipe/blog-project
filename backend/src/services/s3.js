@@ -1,11 +1,11 @@
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
-const { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_PUBLIC_KEY, AWS_SECRET_ACCES_KEY } = require('../config/settings.js');
+const { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_PUBLIC_KEY, AWS_SECRET_ACCESS_KEY } = require('../config/settings.js');
 
 const s3 = new S3Client({
     region: AWS_BUCKET_REGION,
     credentials: {
         accessKeyId: AWS_PUBLIC_KEY,
-        secretAccessKey: AWS_SECRET_ACCES_KEY,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
     },
 });
 

@@ -51,3 +51,10 @@ Eliminar comentarios propios
 Comentar publicaciones de otros usuarios.
 
 Dar y quitar likes ❤️.
+
+## ⚙️ Configuración
+
+Para ejecutar la API se requiere un archivo de entorno. Puedes usar el archivo
+`backend/.env.example` como referencia y renombrarlo a `.env` dentro de la
+carpeta `backend`. Asegúrate de definir `AWS_SECRET_ACCESS_KEY` junto con el
+resto de variables necesarias.
