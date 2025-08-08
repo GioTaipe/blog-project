@@ -4,7 +4,7 @@ const articleRouter = require("./routes/articleRouter");
 const commentRouter = require("./routes/commentRouter");
 const fileUpload = require('express-fileupload');
 const cors = require("cors")
-
+const errorHandler = require('./middleware/errorHandler')
 
 const app = express();
 app.use(cors());
@@ -16,5 +16,6 @@ app.use(fileUpload({
 app.use("/api/users", userRouter);
 app.use("/api/articles", articleRouter);
 app.use("/api/comments", commentRouter);
+app.use(errorHandler);
 
 module.exports = app;

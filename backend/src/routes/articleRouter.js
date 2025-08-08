@@ -1,11 +1,12 @@
 const express = require("express");
 const articleControllers = require("../controllers/articleControllers");
 const verifyToken = require("../middleware/verifyToken");
+const { validateCreateArticle } = require('../middleware/validateArticle');
 
 const router = express.Router();
 
 // Ruta para crear un articulo
-router.post("/createArticle",verifyToken, articleControllers.createArticle);
+router.post("/createArticle",validateCreateArticle,verifyToken, articleControllers.createArticle);
 // Ruta para obtener todos los articulos
 router.get("/getAllArticles", articleControllers.getAllArticles);
 // Ruta para obtener un articulo por su ID
