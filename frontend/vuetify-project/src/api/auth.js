@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://blog-project-4dku.onrender.com/api';
 
 // Iniciar sesión de usuario
 export async function loginUser(email, password) {

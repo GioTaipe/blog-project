@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api'
+const API_BASE = 'https://blog-project-4dku.onrender.com/api'
 
 // obtener todos los comentarios de un post
 export async function getComments(postId) {

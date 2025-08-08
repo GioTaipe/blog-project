@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api/users'
+const API_BASE = 'https://blog-project-4dku.onrender.com/api/users'
 
 // Funciones para manejar la autenticación y el perfil de usuario
 export async function getUserProfile() {
