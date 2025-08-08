@@ -191,7 +191,6 @@ const isLikedByUser = (post) => {
 
 const handleLike = async (postId) => {
   try {
-    console.log("Usuario actual:", currentUserId.value);
 
     const updatedPost = await toggleLike(postId, currentUserId.value);
     const index = posts.value.findIndex(p => p._id === postId);

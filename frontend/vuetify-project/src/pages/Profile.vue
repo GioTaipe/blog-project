@@ -144,7 +144,6 @@ onMounted(async () => {
   try {
     user.value = await getUserProfile()
     userPosts.value = await getMyArticles()
-    console.log("🔄 Perfil de usuario cargado:", userPosts.value);
 
   } catch (err) {
     alert('Error al cargar publicaciones: ' + err.message)
@@ -153,7 +152,6 @@ onMounted(async () => {
 
 const selectAvatar = (avatar) => {
   selectedAvatar.value = avatar
-  console.log(`Avatar seleccionado: ${avatar}`);
 
 }
 
