@@ -89,7 +89,7 @@
         <div class="d-flex justify-end mt-4" style="gap: 8px">
           <v-btn class="post-button" @click="avatarDialog = false">Cerrar</v-btn>
           <v-btn class="post-button" color="primary"
-            @click="updateAvatar(`avatars/avatars/${selectedAvatar}`)">Guardar</v-btn>
+            @click="updateAvatar(`/avatars/avatars/${selectedAvatar}`)">Guardar</v-btn>
         </div>
       </div>
     </v-dialog>
