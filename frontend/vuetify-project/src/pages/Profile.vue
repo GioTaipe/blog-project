@@ -82,14 +82,14 @@
         <v-row>
           <v-col v-for="avatar in avatars" :key="avatar" cols="6" md="3" class="d-flex justify-center">
             <v-card :elevation="selectedAvatar === avatar ? 12 : 2" class="pa-2" @click="selectAvatar(avatar)">
-              <v-img :src="`avatars/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
+              <v-img :src="`/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
             </v-card>
           </v-col>
         </v-row>
         <div class="d-flex justify-end mt-4" style="gap: 8px">
           <v-btn class="post-button" @click="avatarDialog = false">Cerrar</v-btn>
           <v-btn class="post-button" color="primary"
-            @click="updateAvatar(`/avatars/avatars/${selectedAvatar}`)">Guardar</v-btn>
+            @click="updateAvatar(`/avatars/${selectedAvatar}`)">Guardar</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -109,7 +109,7 @@ import { useAuthStore } from '@/stores/app'
 const user = ref([])
 const router = useRouter()
 const userPosts = ref([])
-const defaultAvatar = '/avatars/avatar-default.png'
+const defaultAvatar = 'avatars/avatar-default.png'
 
 const editDialog = ref(false)
 const avatarDialog = ref(false)
