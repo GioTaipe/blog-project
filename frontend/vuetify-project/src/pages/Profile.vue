@@ -82,7 +82,7 @@
         <v-row>
           <v-col v-for="avatar in avatars" :key="avatar" cols="6" md="3" class="d-flex justify-center">
             <v-card :elevation="selectedAvatar === avatar ? 12 : 2" class="pa-2" @click="selectAvatar(avatar)">
-              <v-img :src="`/src/assets/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
+              <v-img :src="`avatars/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
             </v-card>
           </v-col>
         </v-row>
