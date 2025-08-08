@@ -21,7 +21,7 @@
         <div class="form-container mb-4">
           <div class="post-header">
             <v-avatar size="36" class="mr-2">
-              <v-img :src="post.authorId?.profileImage || '/avatars/avatar-default.png'" />
+              <v-img :src="post.authorId?.profileImage || '/src/assets/avatars/avatar-default.png'" />
             </v-avatar>
             <span>{{ post.authorId?.name }} - {{ formatDate(post.createdAt) }}</span>
           </div>
@@ -32,7 +32,7 @@
 
           <div class="post-actions">
             <v-btn @click="handleLike(post._id)" :color="isLikedByUser(post)" class="post-button">
-              ❤️ {{ post.likes.length }}
+              ❤️ {{ post.likes?.length ?? 0 }}
             </v-btn>
 
             <v-btn @click="toggleComments(post._id)" class="post-button">
@@ -42,7 +42,8 @@
 
           <v-expand-transition>
             <div v-if="visibleComments[post._id]">
-              <v-textarea v-model="post.newComment" label="Escribe un comentario..." rows="2" outlined dense class="mt-2"></v-textarea>
+              <v-textarea v-model="post.newComment" label="Escribe un comentario..." rows="2" outlined dense
+                class="mt-2"></v-textarea>
               <v-btn class="post-button" small @click="submitComment(post._id, post.newComment)">Comentar</v-btn>
 
               <v-list dense>
@@ -50,11 +51,12 @@
                   <v-list-item-content>
                     <v-list-item-title class="text-subtitle-2 comment-header">
                       <v-avatar size="28" class="mr-2">
-                        <v-img :src="comment.author.profileImage || '/avatars/avatar-default.png'" />
+                        <v-img :src="comment.author.profileImage || '/src/assets/avatars/avatar-default.png'" />
                       </v-avatar>
                       <span>{{ comment.author.name }} - {{ formatDate(comment.createdAt) }}</span>
                       <v-spacer></v-spacer>
-                      <v-icon v-if="comment.author._id === currentUserId" class="delete-icon" small @click="removeComment(post._id, comment._id)">
+                      <v-icon v-if="comment.author._id === currentUserId" class="delete-icon" small
+                        @click="removeComment(post._id, comment._id)">
                         mdi-delete
                       </v-icon>
                     </v-list-item-title>
@@ -213,9 +215,11 @@ const handleLike = async (postId) => {
   max-width: 780px;
   margin: auto;
   border-radius: 0.75rem;
-  background-color: #C3DAC3; /* fondo principal del contenedor */
+  background-color: #C3DAC3;
+  /* fondo principal del contenedor */
   padding: 1.5rem;
-  color: #6B6054; /* texto principal */
+  color: #6B6054;
+  /* texto principal */
   box-shadow: 0 0 0 1px rgba(107, 96, 84, 0.1), 0 10px 15px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
@@ -297,6 +301,7 @@ const handleLike = async (postId) => {
     padding: 1rem;
     border-radius: 0.5rem;
   }
+
   .title {
     font-size: 1.2rem;
   }

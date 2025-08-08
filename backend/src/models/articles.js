@@ -16,6 +16,8 @@ ArticleSchema.pre('deleteOne',{ document: true, query: false }, async function (
     console.log("✅ Middleware pre('deleteOne') ejecutado para artículo:", this._id);
     const Comment = mongoose.model("Comment");
     // Elimina los comentarios asociados
+    console.log("Eliminando comentarios asociados al artículo:", this._id);
+    
     await Comment.deleteMany({ article: this._id });
 
     next();

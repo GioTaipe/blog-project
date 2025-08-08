@@ -5,8 +5,12 @@ export async function getPosts() {
   const res = await fetch(`${API_BASE}/articles/getAllArticles`)
   const data = await res.json()
   
-  if (!res.ok) throw new Error(data.message || 'Error al obtener posts')
-  return data
+  if (data.success) {
+    return data.articles;
+  } else {
+    console.error('Error en getPosts:', data.message);
+    return []; // devolver array vacío en caso de error
+  }
 }
 // crear un nuevo post
 export async function createPost(post) {
@@ -30,6 +34,7 @@ export async function createPost(post) {
 }
 // obtener artículos de un usuario específico
 export async function getMyArticles() {
+  
   const token = localStorage.getItem('token')
   const res = await fetch(`${API_BASE}/articles/my`, {
     headers: {
@@ -38,8 +43,12 @@ export async function getMyArticles() {
   })
 
   const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al obtener tus artículos')
-  return data
+   if (data.success) {
+    return data.articles; // ✅ devolvemos solo los artículos
+  } else {
+    console.error("Error al obtener artículos del usuario:", data.message);
+    return [];
+  }
 }
 // Eliminar un artículo por ID
 export async function deletePostApi(id) {

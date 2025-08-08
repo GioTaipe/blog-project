@@ -14,7 +14,10 @@
           <h2>{{ user.name }}</h2>
           <p>Email: {{ user.email }}</p>
           <p v-if="user.bio">Bio: {{ user.bio }}</p>
-          <v-btn class="post-button" @click="openEditDialog">✏️ Editar perfil</v-btn>
+          <div class="d-flex justify-end mt-4" style="gap: 8px">
+            <v-btn class="post-button" @click="openEditDialog">✏️ Editar perfil</v-btn>
+            <v-btn class="post-button" color="error" @click="openDeleteDialog">Eliminar cuenta</v-btn>
+          </div>
         </v-col>
       </v-row>
     </div>
@@ -23,11 +26,12 @@
     <div class="form-container mb-6">
       <h3 class="mb-4">Mis publicaciones</h3>
       <v-row>
-        <v-col cols="12" md="12" v-for="post in userPosts" :key="post.id">
+        <v-col cols="12" md="12" v-for="post in userPosts" :key="post._id">
           <div class="form-container mb-4">
-            <v-img v-if="post.fileUrl" :src="post.fileUrl" class="rounded-lg mx-auto my-2" width="220" height="220" cover />
+            <v-img v-if="post.fileUrl" :src="post.fileUrl" class="rounded-lg mx-auto my-2" width="220" height="220"
+              cover />
             <div class="post-content">{{ post.content }}</div>
-            <v-btn class="post-button" @click="confirmDelete(post._id)">Eliminar</v-btn>
+            <v-btn class="post-button" color="error" @click="confirmDelete(post._id)">Eliminar</v-btn>
           </div>
         </v-col>
       </v-row>
@@ -41,6 +45,18 @@
         <div class="d-flex justify-end mt-4" style="gap: 8px">
           <v-btn class="post-button" @click="deleteDialog = false">Cancelar</v-btn>
           <v-btn class="post-button" color="error" @click="deletePost">Eliminar</v-btn>
+        </div>
+      </div>
+    </v-dialog>
+
+    <!-- DIALOGO PARA CONFIRMAR ELIMINACIÓN DE CUENTA -->
+    <v-dialog v-model="deleteAccountDialog" max-width="400">
+      <div class="form-container">
+        <div class="title">¿Eliminar la cuenta?</div>
+        <p>¿Estás seguro de que quieres eliminar esta cuenta? Esta acción no se puede deshacer.</p>
+        <div class="d-flex justify-end mt-4" style="gap: 8px">
+          <v-btn class="post-button" @click="deleteAccountDialog = false">Cancelar</v-btn>
+          <v-btn class="post-button" color="error" @click="deleteAccount">Eliminar</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -66,13 +82,14 @@
         <v-row>
           <v-col v-for="avatar in avatars" :key="avatar" cols="6" md="3" class="d-flex justify-center">
             <v-card :elevation="selectedAvatar === avatar ? 12 : 2" class="pa-2" @click="selectAvatar(avatar)">
-              <v-img :src="`/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
+              <v-img :src="`/src/assets/avatars/${avatar}`" height="100" width="100" class="rounded-circle" />
             </v-card>
           </v-col>
         </v-row>
         <div class="d-flex justify-end mt-4" style="gap: 8px">
           <v-btn class="post-button" @click="avatarDialog = false">Cerrar</v-btn>
-          <v-btn class="post-button" color="primary" @click="updateAvatar(`/avatars/${selectedAvatar}`)">Guardar</v-btn>
+          <v-btn class="post-button" color="primary"
+            @click="updateAvatar(`/src/assets/avatars/${selectedAvatar}`)">Guardar</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -85,10 +102,14 @@ import { getUserProfile } from '@/api/user'
 import { getMyArticles } from '@/api/posts'
 import { deletePostApi } from '@/api/posts'
 import { updateUser } from '@/api/user'
+import { deleteUserProfile } from '@/api/user'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/app'
 
 const user = ref([])
+const router = useRouter()
 const userPosts = ref([])
-const defaultAvatar = '/avatars/avatar-default.png'
+const defaultAvatar = '/src/assets/avatars/avatar-default.png'
 
 const editDialog = ref(false)
 const avatarDialog = ref(false)
@@ -96,6 +117,8 @@ const selectedAvatar = ref('')
 
 const deleteDialog = ref(false)
 const postToDelete = ref(null)
+
+const deleteAccountDialog = ref(false)
 
 
 const avatars = [
@@ -117,32 +140,16 @@ const editForm = ref({
   bio: ''
 })
 
-const openEditDialog = () => {
-  editForm.value = { ...user.value }
-  editDialog.value = true
-}
-
-const saveProfile = () => {
-  user.value = { ...editForm.value }
-  editDialog.value = false
-  updateUser(editForm.value)
-}
-
-const deletePost = async (id) => {
+onMounted(async () => {
   try {
-    await deletePostApi(postToDelete.value)
+    user.value = await getUserProfile()
     userPosts.value = await getMyArticles()
-    deleteDialog.value = false
+    console.log("🔄 Perfil de usuario cargado:", userPosts.value);
+
   } catch (err) {
-    alert('Error al eliminar la publicación: ' + err.message)
+    alert('Error al cargar publicaciones: ' + err.message)
   }
-}
-
-const confirmDelete = (id) => { 
-  postToDelete.value = id
-  deleteDialog.value = true
-}
-
+})
 
 const selectAvatar = (avatar) => {
   selectedAvatar.value = avatar
@@ -156,14 +163,53 @@ const updateAvatar = (avatarUrl) => {
   updateUser({ profileImage: avatarUrl })
 }
 
-onMounted(async () => {
+const saveProfile = () => {
+  const payload = {
+    name: editForm.value.name,
+    email: editForm.value.email,
+    bio: editForm.value.bio
+  };
+
+  user.value = { ...user.value, ...payload }
+  editDialog.value = false
+  updateUser(payload)
+}
+
+const openEditDialog = () => {
+  editForm.value = { ...user.value }
+  editDialog.value = true
+}
+
+const openDeleteDialog = () => {
+  deleteAccountDialog.value = true
+}
+
+const deleteAccount = async () => {
   try {
-    user.value = await getUserProfile()
-    userPosts.value = await getMyArticles()
+    await deleteUserProfile(user.value._id) // Assuming this API deletes the user account
+    deleteAccountDialog.value = false
+    localStorage.removeItem('token')
+    router.push('/Login')
   } catch (err) {
-    alert('Error al cargar publicaciones: ' + err.message)
+    alert('Error al eliminar la cuenta: ' + err.message)
   }
-})
+}
+
+const deletePost = async (id) => {
+  try {
+    await deletePostApi(postToDelete.value)
+    userPosts.value = await getMyArticles()
+    deleteDialog.value = false
+  } catch (err) {
+    alert('Error al eliminar la publicación: ' + err.message)
+  }
+}
+
+const confirmDelete = (id) => {
+  postToDelete.value = id
+  deleteDialog.value = true
+}
+
 </script>
 
 <style scoped>
@@ -176,9 +222,11 @@ onMounted(async () => {
   max-width: 780px;
   margin: auto;
   border-radius: 0.75rem;
-  background-color: #C3DAC3; /* fondo suave */
+  background-color: #C3DAC3;
+  /* fondo suave */
   padding: 1.5rem;
-  color: #6B6054; /* texto principal */
+  color: #6B6054;
+  /* texto principal */
   box-shadow: 0 0 0 1px rgba(107, 96, 84, 0.1), 0 10px 15px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
@@ -218,4 +266,3 @@ onMounted(async () => {
   transform: scale(1.05);
 }
 </style>
-

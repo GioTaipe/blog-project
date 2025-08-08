@@ -1,62 +1,31 @@
-const Comment = require("../models/comments");
+const asyncHandler = require("../utils/asyncHandler");
+const commentService = require("../services/commentService");
 
 // Crear un nuevo comentario
-exports.createComment = async (req , res) => {
-    try{
-        const { id: article } = req.params;
-        console.log("article: ", article);
-        const author = req.user._id;
-        console.log("author: ", author);
-        
-        const { content } = req.body;
-        const comment = new Comment( {content, author, article} );
-        console.log("comment: ", comment);
-        
-        await comment.save();
+exports.createComment = asyncHandler(async (req, res) => {
+  const articleId = req.params.id;
+  const userId = req.user._id;
+  const { content } = req.body;
 
-    res.status(201).json({
-      message: "Comentario publicado con éxito",
-      comment: { _id: comment._id, content: comment.content, author: comment.author, article: comment.article },
-    });
+  const comment = await commentService.createComment({ content, articleId, userId });
 
-    } catch ( error ) {
-        res.status(500).json({ message: "Error del servidor", error });
-    }
-}
-// Obtener comentarios de un artículo
-exports.getComments = async (req, res) => {
-    try {
-        const { id: articleId } = req.params; 
-        console.log("Fetching comments for articleId:", articleId);
-        
-        console.log("articleId: ", articleId);
-        
-        const comments = await Comment.find({ article: articleId }).populate('author', 'name profileImage'); 
-        
-        if ( !comments || comments.length === 0 ) {
-            return res.status(404).json({ message: "No se encontraron comentarios para este artículo" });
-        }
+  res.status(201).json({
+    message: "Comentario publicado con éxito",
+    comment,
+  });
+});
+// Obtener comentarios por ID de artículo
+exports.getComments = asyncHandler(async (req, res) => {
+  const articleId = req.params.id;
+  const comments = await commentService.getCommentsByArticleId(articleId);
 
-        res.status(200).json(comments);
+  res.status(200).json(comments);
+});
+// Eliminar comentario
+exports.deleteComment = asyncHandler(async (req, res) => {
+  const commentId = req.params.id;
 
-    } catch ( error ) {
-        res.status(500).json({ message: "Error del servidor", error });
-    }   
-}
-// Eliminar un comentario
-exports.deleteComment = async (req, res) => {
-    try {
-        const { id: articleId, id: commentId } = req.params;
-        
-        const comment = await Comment.findOneAndDelete({ _id: commentId});
+  await commentService.deleteComment(commentId);
 
-        if ( !comment ) {
-            return res.status(404).json({ message: "Comentario no encontrado" });
-        }
-
-        res.status(200).json({ message: "Comentario eliminado con éxito" });
-
-    } catch ( error ) {
-        res.status(500).json({ message: "Error del servidor", error });
-    }
-}
+  res.status(200).json({ message: "Comentario eliminado con éxito" });
+});

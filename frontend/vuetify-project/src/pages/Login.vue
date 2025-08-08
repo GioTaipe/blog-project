@@ -40,6 +40,18 @@
         </p>
       </div>
     </v-row>
+
+    <!-- ✅ Snackbar de éxito -->
+    <v-snackbar
+      v-model="showSuccess"
+      location="bottom"
+      color="green-darken-2"
+      timeout="3000"
+      rounded="pill"
+    >
+      <v-icon start>mdi-check-circle</v-icon>
+      {{ successMessage }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -57,6 +69,10 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+
+// ✅ Snackbar
+const showSuccess = ref(false)
+const successMessage = ref('')
 
 const toggleForm = () => {
   isLogin.value = !isLogin.value
@@ -79,7 +95,11 @@ const handleSubmit = async () => {
       }
 
       const data = await registerUser(name.value, email.value, password.value)
-      alert('Cuenta creada correctamente, ahora inicia sesión')
+
+      // ✅ Mostrar mensaje de éxito
+      successMessage.value = '¡Usuario registrado con éxito!'
+      showSuccess.value = true
+
       toggleForm()
     }
   } catch (err) {
@@ -87,6 +107,7 @@ const handleSubmit = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .logo-login {
