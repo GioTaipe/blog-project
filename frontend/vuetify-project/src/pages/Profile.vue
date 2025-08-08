@@ -89,7 +89,7 @@
         <div class="d-flex justify-end mt-4" style="gap: 8px">
           <v-btn class="post-button" @click="avatarDialog = false">Cerrar</v-btn>
           <v-btn class="post-button" color="primary"
-            @click="updateAvatar(`/src/assets/avatars/${selectedAvatar}`)">Guardar</v-btn>
+            @click="updateAvatar(`/avatars/${selectedAvatar}`)">Guardar</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -109,7 +109,7 @@ import { useAuthStore } from '@/stores/app'
 const user = ref([])
 const router = useRouter()
 const userPosts = ref([])
-const defaultAvatar = '/src/assets/avatars/avatar-default.png'
+const defaultAvatar = '/avatars/avatar-default.png'
 
 const editDialog = ref(false)
 const avatarDialog = ref(false)
