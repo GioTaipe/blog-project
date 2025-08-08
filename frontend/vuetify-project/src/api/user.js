@@ -35,7 +35,6 @@ export async function deleteUserProfile() {
 // Función para actualizar los datos del usuario
 export async function updateUser(userData) {
   const token = localStorage.getItem('token')
-  console.log("Updating user with data:", userData);
   
   const res = await fetch(`${API_BASE}/me`, {
     method: 'PUT',
