@@ -21,7 +21,7 @@
         <div class="form-container mb-4">
           <div class="post-header">
             <v-avatar size="36" class="mr-2">
-              <v-img :src="post.authorId?.profileImage || '/src/assets/avatars/avatar-default.png'" />
+              <v-img :src="post.authorId?.profileImage || '/avatars/avatar-default.png'" />
             </v-avatar>
             <span>{{ post.authorId?.name }} - {{ formatDate(post.createdAt) }}</span>
           </div>
@@ -51,7 +51,7 @@
                   <v-list-item-content>
                     <v-list-item-title class="text-subtitle-2 comment-header">
                       <v-avatar size="28" class="mr-2">
-                        <v-img :src="comment.author.profileImage || '/src/assets/avatars/avatar-default.png'" />
+                        <v-img :src="comment.author.profileImage || 'avatars/avatar-default.png'" />
                       </v-avatar>
                       <span>{{ comment.author.name }} - {{ formatDate(comment.createdAt) }}</span>
                       <v-spacer></v-spacer>
