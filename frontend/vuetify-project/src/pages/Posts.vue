@@ -51,7 +51,7 @@
                   <v-list-item-content>
                     <v-list-item-title class="text-subtitle-2 comment-header">
                       <v-avatar size="28" class="mr-2">
-                        <v-img :src="comment.author.profileImage || 'avatars/avatar-default.png'" />
+                        <v-img :src="comment.author.profileImage || '/avatars/avatar-default.png'" />
                       </v-avatar>
                       <span>{{ comment.author.name }} - {{ formatDate(comment.createdAt) }}</span>
                       <v-spacer></v-spacer>
