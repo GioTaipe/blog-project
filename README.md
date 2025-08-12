@@ -14,9 +14,29 @@ Almacenamiento de Imágenes: Amazon AWS S3 ☁️.
 
 Frontend: Vue 3 con Vuetify 🎨.
 
-Arquitectura: API RESTful 🌐.
-
 Lenguaje: JavaScript 📜.
+
+## 🏗️ ARQUITECTURA
+
+Arquitectura por capas modular para backend con Node.js y Express:
+
+- **Config ⚙️**: Configuración global (variables de entorno, conexión a la base de datos, credenciales AWS).
+
+- **Routes 🛣️**: Definición y agrupación de rutas/endpoints de la API.
+
+- **Controllers 🎯**: Reciben las solicitudes HTTP, llaman a los servicios y devuelven la respuesta.
+
+- **Middlewares 🛡️**: Validaciones, autenticación, manejo de errores y otras funciones intermedias.
+
+- **Services 📦**: Lógica de negocio y orquestación entre repositorios y otras capas.
+
+- **Repositories 🗄️**: Acceso a la base de datos a través de Mongoose.
+
+- **Models 📑**: Definición de esquemas y modelos de datos.
+
+- **Utils 🛠️**: Funciones auxiliares reutilizables en todo el proyecto.
+
+Cada capa mantiene **bajo acoplamiento** y **alta cohesión**, facilitando la escalabilidad y el mantenimiento del sistema.
 
 ## ✨ CARACTERÍSTICAS
 
