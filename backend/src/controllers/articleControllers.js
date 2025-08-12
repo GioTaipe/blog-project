@@ -1,5 +1,4 @@
 const Article = require("../models/articles");
-const { uploadFile, deleteFile } = require("../services/s3");
 const articleService = require('../services/articleService');
 const asyncHandler = require('../utils/asyncHandler')
 

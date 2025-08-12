@@ -6,7 +6,7 @@ exports.createComment = asyncHandler(async (req, res) => {
   const articleId = req.params.id;
   const userId = req.user._id;
   const { content } = req.body;
-
+  
   const comment = await commentService.createComment({ content, articleId, userId });
 
   res.status(201).json({
