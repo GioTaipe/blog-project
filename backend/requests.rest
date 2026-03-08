@@ -34,7 +34,7 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/users/682e223dcccee48581e1a65c
 
 ###
-POST http://localhost:3000/api/articles/createArticle
+POST http://localhost:3000/api/articles/createPost
 Content-Type: application/json
 
     {
@@ -45,7 +45,7 @@ Content-Type: application/json
 
 ###
 # Get all articles
-GET http://localhost:3000/api/articles/getAllArticles
+GET http://localhost:3000/api/articles/getAllPost
 
 ###
 # Get an article by ID

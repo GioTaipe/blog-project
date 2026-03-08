@@ -11,11 +11,19 @@ router.post("/register", validateUser.validateRegister, userController.createUse
 router.post("/login", validateUser.validateLogin, userController.loginUser);
 // Ruta para obtener todos los usuarios
 router.get("/", userController.getAllUsers);
-// Ruta para obtener un usuario por ID
+// Ruta para buscar usuarios por nombre
+router.get("/search", userController.searchUsers);
+// Ruta para obtener un usuario autenticado (debe estar antes de /:id)
 router.get("/me",verifyToken, userController.getAuthenticatedUser);
 // Ruta para eliminar un usuario por ID
 router.delete("/me",verifyToken ,userController.deleteUser);
 // Ruta para actualizar un usuario por ID
 router.put("/me", verifyToken,userController.updateUser);
+// Ruta para actualizar la imagen de perfil
+router.put("/me/profile-image", verifyToken, userController.updateProfileImage);
+// Ruta para actualizar el banner (color o imagen)
+router.put("/me/banner-image", verifyToken, userController.updateBanner);
+// Ruta para obtener perfil público de un usuario por ID (debe estar al final)
+router.get("/:id", userController.getPublicProfile);
 
 module.exports = router;

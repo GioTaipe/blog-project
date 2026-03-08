@@ -1,83 +1,88 @@
-const API_BASE = 'https://blog-project-4dku.onrender.com/api'
+import api from './axiosConfig'
 
-// obtener todos los posts
-export async function getPosts() {
-  const res = await fetch(`${API_BASE}/articles/getAllArticles`)
-  const data = await res.json()
-  
-  if (data.success) {
-    return data.articles;
-  } else {
-    console.error('Error en getPosts:', data.message);
-    return []; // devolver array vacío en caso de error
+/**
+ * Obtener todos los posts
+ */
+export async function getPosts () {
+  console.log('API!!')
+
+  try {
+    const { data } = await api.get('/posts/getAllPost')
+    console.log(data)
+
+    // Si el backend devuelve { success: true, posts: [...] }
+    return data.success ? data.posts : []
+  } catch (error) {
+    console.error('Error en getPosts:', error.message)
+    return []
   }
 }
-// crear un nuevo post
-export async function createPost(post) {
-  const token = localStorage.getItem('token')
-  const formData = new FormData(); 
+
+/**
+ * Crear un nuevo post
+ * Axios detecta automáticamente que es FormData y pone el Content-Type correcto
+ */
+export async function createPost (post) {
+  const formData = new FormData()
   formData.append('content', post.content)
   if (post.file) {
     formData.append('image', post.file)
   }
-  const res = await fetch(`${API_BASE}/articles/createArticle`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-    body: formData
-  })
-  const data = await res.json()
-  
-  if (!res.ok) throw new Error(data.message || 'Error al crear el post')
-  return data
-}
-// obtener artículos de un usuario específico
-export async function getMyArticles() {
-  
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API_BASE}/articles/my`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
 
-  const data = await res.json()
-   if (data.success) {
-    return data.articles; // ✅ devolvemos solo los artículos
-  } else {
-    console.error("Error al obtener artículos del usuario:", data.message);
-    return [];
+  try {
+    const { data } = await api.post('/posts/createPost', formData)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al crear el post')
   }
 }
-// Eliminar un artículo por ID
-export async function deletePostApi(id) {
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API_BASE}/articles/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al eliminar el post')
-  return data
-}
-// Añadir o eliminar un like a un post
-export async function toggleLike(postId, userId) {
-  
-  const token = localStorage.getItem('token')
-  const response = await fetch(`${API_BASE}/articles/${postId}/like`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ userId }),
-  });
 
-  if (!response.ok) {
-    throw new Error('Error al hacer like');
+/**
+ * Obtener artículos de un usuario específico (Mis artículos)
+ */
+export async function getMyArticles () {
+  try {
+    const { data } = await api.get('/posts/my')
+    return data.success ? data.posts : []
+  } catch (error) {
+    console.error('Error al obtener mis artículos:', error.message)
+    return []
   }
+}
 
-  return await response.json();
+/**
+ * Eliminar un artículo por ID
+ */
+export async function deletePostApi (id) {
+  try {
+    const { data } = await api.delete(`/posts/${id}`)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al eliminar el post')
+  }
+}
+
+/**
+ * Añadir o eliminar un like a un post
+ */
+export async function toggleLike (postId) {
+  try {
+    const { data } = await api.post(`/posts/${postId}/like`)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al procesar el like')
+  }
+}
+
+/**
+ * Obtener artículos de un usuario específico por su ID
+ */
+export async function getUserPosts (userId) {
+  try {
+    const { data } = await api.get(`/posts/user/${userId}`)
+    return data.success ? data.posts : []
+  } catch (error) {
+    console.error('Error al obtener artículos del usuario:', error.message)
+    return []
+  }
 }

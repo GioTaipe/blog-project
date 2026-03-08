@@ -6,11 +6,10 @@
 </template>
 
 <script setup>
-import Navbar from '@/components/Navbar.vue'
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/app'
+  import { storeToRefs } from 'pinia'
+  import Navbar from '@/components/Navbar.vue'
+  import { useAuthStore } from '@/stores/authStore'
 
-const auth = useAuthStore()
-const { isLoggedIn } = storeToRefs(auth) 
+  const auth = useAuthStore()
+  const { isLoggedIn } = storeToRefs(auth)
 </script>
-
