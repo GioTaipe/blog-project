@@ -1,51 +1,91 @@
-const API_BASE = 'https://blog-project-4dku.onrender.com/api/users'
+import api from './axiosConfig'
 
-// Funciones para manejar la autenticación y el perfil de usuario
-export async function getUserProfile() {
-  const token = localStorage.getItem('token')
-  
-  const res = await fetch(`${API_BASE}/me`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    }
-  })
-  const data = await res.json()
-  
-  if (!res.ok) throw new Error(data.message || 'Error al obtener perfil')
-  return data
+/**
+ * Obtener perfil del usuario autenticado
+ */
+export async function getUserProfile () {
+  try {
+    const { data } = await api.get('/users/me')
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al obtener perfil')
+  }
 }
 
-// Función para eliminar el perfil de usuario
-export async function deleteUserProfile() {
-  const token = localStorage.getItem('token')
-  
-  const res = await fetch(`${API_BASE}/me`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    }
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al eliminar perfil')
-  return data 
-} 
+/**
+ * Buscar usuarios por nombre
+ */
+export async function searchUsers (query) {
+  try {
+    const { data } = await api.get(`/users/search?q=${encodeURIComponent(query)}`)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al buscar usuarios')
+  }
+}
 
-// Función para actualizar los datos del usuario
-export async function updateUser(userData) {
-  const token = localStorage.getItem('token')
-  
-  const res = await fetch(`${API_BASE}/me`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData)
-  })
-  
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al actualizar usuario')
-  return data
+/**
+ * Obtener perfil público de un usuario por ID
+ */
+export async function getPublicProfile (userId) {
+  try {
+    const { data } = await api.get(`/users/${userId}`)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al obtener perfil público')
+  }
+}
+
+/**
+ * Eliminar el perfil de usuario
+ */
+export async function deleteUserProfile () {
+  try {
+    const { data } = await api.delete('/users/me')
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al eliminar perfil')
+  }
+}
+
+/**
+ * Actualizar datos básicos del usuario (Nombre, email, etc.)
+ */
+export async function updateUser (userData) {
+  try {
+    const { data } = await api.put('/users/me', userData)
+    return data.user
+  } catch (error) {
+    throw new Error(error.message || 'Error al actualizar usuario')
+  }
+}
+
+/**
+ * Actualizar la imagen de perfil (Cloudinary)
+ */
+export async function updateProfileImage (file) {
+  try {
+    const formData = new FormData()
+    formData.append('profilePic', file)
+
+    const { data } = await api.put('/users/me/profile-image', formData)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al actualizar imagen de perfil')
+  }
+}
+
+/**
+ * Actualizar la imagen del banner del perfil (Cloudinary)
+ */
+export async function updateBannerImage (file) {
+  try {
+    const formData = new FormData()
+    formData.append('bannerImage', file)
+
+    const { data } = await api.put('/users/me/banner-image', formData)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al actualizar imagen del banner')
+  }
 }

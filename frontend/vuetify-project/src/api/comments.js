@@ -1,40 +1,39 @@
-const API_BASE = 'https://blog-project-4dku.onrender.com/api'
+import api from './axiosConfig'
 
-// obtener todos los comentarios de un post
-export async function getComments(postId) {
-  
-  const res = await fetch(`${API_BASE}/comments/${postId}`)
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al obtener comentarios')
-  return data
+/**
+ * Obtener todos los comentarios de un post
+ */
+export async function getComments (postId) {
+  try {
+    const { data } = await api.get(`/comments/${postId}`)
+    // Axios ya parsea el JSON, devolvemos la data directamente
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al obtener comentarios')
+  }
 }
-// crear un nuevo comentario
-export async function createComment(postId, content) {
 
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API_BASE}/comments/createComment/${postId}`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({content})
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al crear el comentario')
-  return data
+/**
+ * Crear un nuevo comentario
+ */
+export async function createComment (postId, content) {
+  try {
+    // No necesitamos pasar el token, el interceptor de Axios lo hace por nosotros
+    const { data } = await api.post(`/comments/createComment/${postId}`, { content })
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al crear el comentario')
+  }
 }
-// eliminar un comentario
-export async function deleteComment(postId, commentId) {
-  
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API_BASE}/comments/${postId}/${commentId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Error al eliminar el comentario')
-  return data
+
+/**
+ * Eliminar un comentario
+ */
+export async function deleteCommentApi (commentId) {
+  try {
+    const { data } = await api.delete(`/comments/${commentId}`)
+    return data
+  } catch (error) {
+    throw new Error(error.message || 'Error al eliminar el comentario')
+  }
 }

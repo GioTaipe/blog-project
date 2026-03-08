@@ -4,18 +4,37 @@
  * Automatic routes for `./src/pages/*.vue`
  */
 
-// Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
+import { createRouter, createWebHistory } from 'vue-router/auto'
+// Componentes
+import Login from '@/pages/Login.vue'
+
 import Posts from '@/pages/Posts.vue'
 import Profile from '@/pages/Profile.vue'
-import Login from '@/pages/Login.vue'
+import PublicProfile from '@/pages/PublicProfile.vue'
+import { useAuthStore } from '@/stores/authStore' // Importamos el store de Pinia
 
 const routes = [
   { path: '/', redirect: '/Login' },
-  { path: '/Login', component: Login },
-  { path: '/Posts', component: Posts, meta: { requiresAuth: true } },
-  { path: '/Profile', component: Profile, meta: { requiresAuth: true } }
+  { path: '/Login', name: '/Login', component: Login },
+  {
+    path: '/Posts',
+    name: '/Posts',
+    component: Posts,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/Profile',
+    name: '/Profile',
+    component: Profile,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/user/:id',
+    name: '/user/:id',
+    component: PublicProfile,
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
@@ -23,36 +42,36 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
-// Funcon para verificar si el token ha expirado
-function isTokenExpired(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const exp = payload.exp * 1000 // Convert to milliseconds
-    return Date.now() >= exp
-  } catch (e) {
-    console.error('Invalid token format', e)
-    return true // Treat invalid tokens as expired
-  }
-}
-
-// Navegacion global para verificar autenticación
-// y redirigir a la página de inicio de sesión si es necesario
-// y redirigir a la página de posts si ya está autenticado
+/**
+ * Navegación global protegida
+ * Centralizamos la lógica usando el AuthStore de Pinia
+ */
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  const isAuthenticated = token && !isTokenExpired(token)
+  const auth = useAuthStore()
+
+  // Verificamos si el usuario tiene sesión activa mediante el getter del Store
+  const isAuthenticated = auth.isLoggedIn
+
+  // Caso 1: La ruta requiere autenticación y el usuario NO está logueado
   if (to.meta.requiresAuth && !isAuthenticated) {
-    localStorage.removeItem('token')
-    return next({ path: '/Login' })
+    // Forzamos limpieza por seguridad (opcional ya que logout lo hace)
+    auth.logout()
+    return next({ name: '/Login' })
   }
+
+  // Caso 2: El usuario intenta ir al Login teniendo ya una sesión activa
   if (to.path === '/Login' && isAuthenticated) {
-    return next({ path: '/Posts' })
+    return next({ name: '/Posts' })
   }
+
+  // En cualquier otro caso, permitimos la navegación
   next()
 })
 
-
-// Workaround for https://github.com/vitejs/vite/issues/11804
+/**
+ * Manejo de errores de importación dinámica
+ * Específico para corregir fallos de carga de módulos en entornos Vite/Vuetify
+ */
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
     if (localStorage.getItem('vuetify:dynamic-reload')) {
@@ -63,19 +82,13 @@ router.onError((err, to) => {
       location.assign(to.fullPath)
     }
   } else {
-    console.error(err)
+    console.error('Router error:', err)
   }
 })
-//De esta manera se evita el error de importación dinámica de módulos en Vuetify pero no es la mejor solución ya que forzamos y el plugin 
 
-// router.isReady().then(() => {
-//   localStorage.removeItem('vuetify:dynamic-reload')
-// })
-// console.log(router.getRoutes())
-// const postRoute = router.getRoutes().find(r => r.path === '/Posts')
-// if (postRoute) postRoute.meta.requiresAuth = true
-
-// const profileRoute = router.getRoutes().find(r => r.path === '/Profile')
-// if (profileRoute) profileRoute.meta.requiresAuth = true
+// Limpieza del flag de recarga cuando el router está listo
+router.isReady().then(() => {
+  localStorage.removeItem('vuetify:dynamic-reload')
+})
 
 export default router

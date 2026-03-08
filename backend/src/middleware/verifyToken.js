@@ -1,23 +1,38 @@
-require("dotenv").config();
 const jwt = require('jsonwebtoken');
 
-// Middleware para verificar el token JWT
 const verifyToken = (req, res, next) => {
-  const authHeader = req.header('Authorization');
+  const SECRET = process.env.SECRET_KEY;
 
+  // 1. Controlar que la llave exista en el servidor
+  if (!SECRET) {
+    console.error("ERROR: SECRET_KEY missing in .env");
+    return res.status(500).json({ message: 'Error interno de configuración' });
+  }
+
+  const authHeader = req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Acceso denegado. Token no proporcionado' });
+    return res.status(401).json({ message: 'No proporcionaste un token válido' });
   }
 
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = decoded; 
+    // 2. Verificación estricta
+    const decoded = jwt.verify(token, SECRET);
     
+    // 3. Verificación extra: ¿El ID viene en el token?
+    if (!decoded._id) {
+        throw new Error("Token mal formado");
+    }
+
+    req.user = decoded; 
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Token inválido o expirado', error });
+    // Si el secreto cambió, entrará aquí siempre
+    return res.status(403).json({ 
+        message: 'Sesión inválida o expirada. Por favor, inicia sesión de nuevo.',
+        error: error.message 
+    });
   }
 };
 

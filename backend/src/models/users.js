@@ -1,31 +1,40 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-require('./articles');
 
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
     password: { type: String, required: true, minlength: 6 },
     bio: { type: String, trim: true, default: "" },
     profileImage: { type: String, default: "" },
+    bannerImage: { type: String, default: "" },
     role: { type: String, enum: ["admin", "user"], default: "user" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-UserSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
-  console.log("✅ Middleware pre('deleteOne') ejecutado para artículo:", this._id);
-  const Article = mongoose.model("Article");
+UserSchema.pre(
+  "deleteOne",
+  { document: true, query: false },
+  async function (next) {
+    const Post = mongoose.model("Post");
 
-  const articles = await Article.find({ authorId: this._id });
+    const posts = await Post.find({ authorId: this._id });
 
-  for (const article of articles) {
-    await article.deleteOne(); 
-  }
+    for (const post of posts) {
+      await post.deleteOne();
+    }
 
-  next();
-});
+    next();
+  },
+);
 
 // Middleware para encriptar la contraseña antes de guardar
 UserSchema.pre("save", async function (next) {

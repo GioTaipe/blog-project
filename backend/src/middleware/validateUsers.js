@@ -1,4 +1,4 @@
-module.exports.validateRegister = (req, res, next) => {
+function validateRegister(req, res, next) {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -15,9 +15,9 @@ module.exports.validateRegister = (req, res, next) => {
   }
 
   next();
-};
+}
 
-module.exports.validateLogin = (req, res, next) => {
+function validateLogin(req, res, next) {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -25,4 +25,9 @@ module.exports.validateLogin = (req, res, next) => {
   }
 
   next();
+}
+
+module.exports = {
+  validateRegister,
+  validateLogin,
 };
