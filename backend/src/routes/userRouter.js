@@ -21,6 +21,8 @@ router.delete("/me",verifyToken ,userController.deleteUser);
 router.put("/me", verifyToken,userController.updateUser);
 // Ruta para actualizar la imagen de perfil
 router.put("/me/profile-image", verifyToken, userController.updateProfileImage);
+// Ruta para eliminar la imagen de perfil
+router.delete("/me/profile-image", verifyToken, userController.deleteProfileImage);
 // Ruta para actualizar el banner (color o imagen)
 router.put("/me/banner-image", verifyToken, userController.updateBanner);
 // Ruta para obtener perfil público de un usuario por ID (debe estar al final)

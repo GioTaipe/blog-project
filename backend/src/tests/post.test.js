@@ -94,8 +94,37 @@ describe('Posts API - Tests de Integración', () => {
         });
     });
 
+    describe('POST /api/posts/createPost - Rate limit', () => {
+        it('Debería rechazar el 6to post del mismo usuario', async () => {
+            for (let i = 0; i < 5; i++) {
+                await Post.create({ authorId: userId, content: `Post ${i + 1}` });
+            }
+
+            const res = await request(app)
+                .post('/api/posts/createPost')
+                .set('Authorization', `Bearer ${token}`)
+                .field('content', 'Post numero 6');
+
+            expect(res.statusCode).toBe(403);
+            expect(res.body.message).toBe('Has alcanzado el limite de publicaciones en esta version Demo');
+        });
+
+        it('Debería permitir crear si otro usuario tiene 5 posts', async () => {
+            for (let i = 0; i < 5; i++) {
+                await Post.create({ authorId: otherUserId, content: `Other Post ${i + 1}` });
+            }
+
+            const res = await request(app)
+                .post('/api/posts/createPost')
+                .set('Authorization', `Bearer ${token}`)
+                .field('content', 'Mi primer post');
+
+            expect(res.statusCode).toBe(201);
+        });
+    });
+
     describe('GET /api/posts/getAllPost', () => {
-        it('Debería obtener todos los posts', async () => {
+        it('Debería obtener posts con paginacion', async () => {
             await Post.create({ authorId: userId, content: 'Post 1' });
             await Post.create({ authorId: userId, content: 'Post 2' });
 
@@ -104,6 +133,31 @@ describe('Posts API - Tests de Integración', () => {
             expect(res.statusCode).toBe(200);
             expect(res.body.success).toBe(true);
             expect(res.body.posts).toHaveLength(2);
+            expect(res.body.hasMore).toBe(false);
+        });
+
+        it('Debería devolver hasMore=true cuando hay mas de 8 posts', async () => {
+            for (let i = 0; i < 10; i++) {
+                await Post.create({ authorId: userId, content: `Post ${i + 1}` });
+            }
+
+            const res = await request(app).get('/api/posts/getAllPost?page=1');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.posts).toHaveLength(8);
+            expect(res.body.hasMore).toBe(true);
+        });
+
+        it('Debería devolver la segunda pagina correctamente', async () => {
+            for (let i = 0; i < 10; i++) {
+                await Post.create({ authorId: userId, content: `Post ${i + 1}` });
+            }
+
+            const res = await request(app).get('/api/posts/getAllPost?page=2');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.posts).toHaveLength(2);
+            expect(res.body.hasMore).toBe(false);
         });
 
         it('Debería devolver array vacío si no hay posts', async () => {

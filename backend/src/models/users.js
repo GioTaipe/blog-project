@@ -11,7 +11,9 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    password: { type: String, required: true, minlength: 6 },
+    password: { type: String, minlength: 6 },
+    googleId: { type: String, default: null },
+    authProvider: { type: String, enum: ["local", "google"], default: "local" },
     bio: { type: String, trim: true, default: "" },
     profileImage: { type: String, default: "" },
     bannerImage: { type: String, default: "" },
@@ -25,16 +27,38 @@ UserSchema.pre(
   { document: true, query: false },
   async function (next) {
     const Post = mongoose.model("Post");
+    const Comment = mongoose.model("Comment");
 
+    // Eliminar comentarios de los posts del usuario (via hook del Post)
     const posts = await Post.find({ authorId: this._id });
-
     for (const post of posts) {
       await post.deleteOne();
     }
 
+    // Eliminar comentarios que el usuario hizo en posts de otros
+    await Comment.deleteMany({ author: this._id });
+
     next();
   },
 );
+UserSchema.pre("findOneAndDelete", async function (next) {
+  const user = await this.model.findOne(this.getFilter());
+  if (!user) return next();
+
+  const Post = mongoose.model("Post");
+  const Comment = mongoose.model("Comment");
+
+  // Eliminar posts uno a uno para disparar el hook del Post (cascade a comentarios)
+  const posts = await Post.find({ authorId: user._id });
+  for (const post of posts) {
+    await post.deleteOne();
+  }
+
+  // Eliminar comentarios que el usuario hizo en posts de otros
+  await Comment.deleteMany({ author: user._id });
+
+  next();
+});
 
 // Middleware para encriptar la contraseña antes de guardar
 UserSchema.pre("save", async function (next) {

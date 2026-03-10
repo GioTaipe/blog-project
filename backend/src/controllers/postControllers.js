@@ -15,8 +15,9 @@ const createPost = asyncHandler(async (req, res) => {
 });
 
 const getAllPost = asyncHandler(async (req, res) => {
-  const posts = await postService.getAllPost();
-  res.json({ success: true, posts });
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const { posts, hasMore } = await postService.getAllPost(page);
+  res.json({ success: true, posts, hasMore });
 });
 
 const getUserPost = asyncHandler(async (req, res) => {

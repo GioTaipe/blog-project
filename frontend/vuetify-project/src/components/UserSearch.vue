@@ -7,9 +7,10 @@
 
       <div v-if="showResults && searchResults.length > 0" class="search-results">
         <div v-for="user in searchResults" :key="user._id" class="search-result-item" @click="goToProfile(user._id)">
-          <v-avatar size="40">
-            <v-img :src="user.profileImage || defaultAvatar" />
-          </v-avatar>
+          <div class="search-avatar" :style="avatarGradient(user.name)">
+            {{ getInitials(user.name) }}
+            <img v-if="user.profileImage" class="avatar-img" :src="user.profileImage" alt="" referrerpolicy="no-referrer" />
+          </div>
           <div class="user-info">
             <span class="user-name">{{ user.name }}</span>
           </div>
@@ -34,7 +35,26 @@ const searchQuery = ref('')
 const searchResults = ref([])
 const showResults = ref(false)
 const loading = ref(false)
-const defaultAvatar = '/avatars/avatar-default.png'
+
+const getInitials = (name) => {
+  if (!name) return '?'
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+}
+
+const gradients = [
+  'linear-gradient(135deg,#6c63ff,#a78bfa)',
+  'linear-gradient(135deg,#f093fb,#f5576c)',
+  'linear-gradient(135deg,#43e97b,#38f9d7)',
+  'linear-gradient(135deg,#4facfe,#00f2fe)',
+  'linear-gradient(135deg,#f7971e,#ffd200)',
+  'linear-gradient(135deg,#1d5fd1,#4b8aff)',
+]
+
+const avatarGradient = (name) => {
+  if (!name) return { background: gradients[0] }
+  const idx = name.charCodeAt(0) % gradients.length
+  return { background: gradients[idx] }
+}
 
 let debounceTimeout = null
 
@@ -156,6 +176,16 @@ onUnmounted(() => {
   font-size: 0.9rem;
   color: #333;
 }
+
+.search-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; font-weight: 700; color: white;
+  overflow: hidden;
+  position: relative;
+}
+.search-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .no-results {
   padding: 16px;
