@@ -3,17 +3,26 @@ const Posts = require("../models/post");
 
 const create = (data) => new Posts(data).save();
 
-const findAll = () =>
-  Posts.find()
+const countByAuthor = (userId) => Posts.countDocuments({ authorId: userId });
+
+const findAll = (skip = 0, limit = 0) => {
+  const query = Posts.find()
     .populate("authorId", "name profileImage")
     .populate({
-      path: "comments", 
+      path: "comments",
       populate: {
-        path: "author", 
+        path: "author",
         select: "name profileImage"
       }
     })
     .sort({ createdAt: -1 });
+
+  if (limit > 0) {
+    query.skip(skip).limit(limit);
+  }
+
+  return query;
+};
 
 const findById = (id) => 
   Posts.findById(id)
@@ -55,6 +64,7 @@ const pullLike = (postId, userId) =>
 
 module.exports = {
   create,
+  countByAuthor,
   findAll,
   findById,
   deleteOne,

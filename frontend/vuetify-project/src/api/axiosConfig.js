@@ -18,19 +18,23 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   error => {
-    const customError = {
-      message:
-        error.response?.data?.message || 'Error de conexión con el servidor',
-      status: error.response?.status,
-    }
+    const data = error.response?.data
+    const status = error.response?.status
 
-    // Si el token expiró (401), podemos cerrar sesión automáticamente
-    if (customError.status === 401) {
+    // Extraer mensaje: desde message, o desde el array errors de express-validator
+    let message = data?.message
+      || data?.errors?.[0]?.msg
+      || 'Error de conexión con el servidor'
+
+    // Si el token expiró (401), cerrar sesión automáticamente
+    if (status === 401) {
       const authStore = useAuthStore()
       authStore.logout()
     }
 
-    return Promise.reject(customError)
+    const apiError = new Error(message)
+    apiError.status = status
+    return Promise.reject(apiError)
   },
 )
 

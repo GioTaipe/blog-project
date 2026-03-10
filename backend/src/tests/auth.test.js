@@ -320,6 +320,62 @@ describe('Auth API - Tests de Integración', () => {
         });
     });
 
+    describe('DELETE /api/users/me/profile-image', () => {
+        let token;
+        let userId;
+
+        beforeEach(async () => {
+            const user = await User.create({
+                name: 'Profile Image User',
+                email: 'profileimg@test.com',
+                password: 'password123',
+                profileImage: 'http://res.cloudinary.com/demo/image/upload/v1234/BLOG/IMAGES-PROFILE/abc123.jpg'
+            });
+            userId = user._id;
+            token = jwt.sign({ _id: user._id, email: user.email }, process.env.SECRET_KEY);
+            cloudinary.deleteFile.mockResolvedValue({ result: 'ok' });
+            cloudinary.extractPublicId.mockReturnValue('BLOG/IMAGES-PROFILE/abc123');
+        });
+
+        it('Debería eliminar la foto de perfil del usuario', async () => {
+            const res = await request(app)
+                .delete('/api/users/me/profile-image')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.message).toBe('Foto de perfil eliminada con éxito');
+            expect(res.body.user.profileImage).toBe('');
+
+            const updatedUser = await User.findById(userId);
+            expect(updatedUser.profileImage).toBe('');
+        });
+
+        it('Debería llamar a deleteFile de Cloudinary', async () => {
+            await request(app)
+                .delete('/api/users/me/profile-image')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(cloudinary.deleteFile).toHaveBeenCalled();
+        });
+
+        it('Debería fallar si el usuario no tiene foto de perfil', async () => {
+            await User.findByIdAndUpdate(userId, { profileImage: '' });
+
+            const res = await request(app)
+                .delete('/api/users/me/profile-image')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toBe(400);
+        });
+
+        it('Debería fallar sin token', async () => {
+            const res = await request(app)
+                .delete('/api/users/me/profile-image');
+
+            expect(res.statusCode).toBe(401);
+        });
+    });
+
     describe('PUT /api/users/me/banner-image', () => {
         let token;
 

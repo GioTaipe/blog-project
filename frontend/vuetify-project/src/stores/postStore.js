@@ -6,18 +6,23 @@ export const usePostStore = defineStore('posts', {
   state: () => ({
     posts: [],
     loading: false,
+    loadingMore: false,
     publishing: false,
+    page: 1,
+    hasMore: true,
   }),
 
   actions: {
-    // Obtener todos los posts
+    // Obtener la primera página de posts
     async fetchPosts () {
       this.loading = true
       try {
-        const postsData = await getPosts() // Llamamos a la función de la API
-        this.posts = postsData
+        this.page = 1
+        const { posts, hasMore } = await getPosts(1)
+        this.posts = posts
           .filter(post => post.authorId !== null)
           .map(post => ({ ...post, newComment: '' }))
+        this.hasMore = hasMore
       } catch (error) {
         throw error
       } finally {
@@ -25,13 +30,31 @@ export const usePostStore = defineStore('posts', {
       }
     },
 
+    // Cargar más posts (siguiente página)
+    async loadMorePosts () {
+      this.loadingMore = true
+      try {
+        const nextPage = this.page + 1
+        const { posts, hasMore } = await getPosts(nextPage)
+        const newPosts = posts
+          .filter(post => post.authorId !== null)
+          .map(post => ({ ...post, newComment: '' }))
+        this.posts.push(...newPosts)
+        this.page = nextPage
+        this.hasMore = hasMore
+      } catch (error) {
+        throw error
+      } finally {
+        this.loadingMore = false
+      }
+    },
+
     // Crear un nuevo post
     async createPostAction (postContent, file) {
       this.publishing = true
       try {
-        // Llamamos a la API pasando el objeto que espera
         await createPost({ content: postContent, file })
-        await this.fetchPosts() // Recargamos para ver el nuevo post
+        await this.fetchPosts()
       } catch (error) {
         throw error
       } finally {

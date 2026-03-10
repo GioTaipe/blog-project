@@ -1,4 +1,4 @@
-const { uploadFile, deleteFile } = require("../utils/cloudinary");
+const { uploadFile, deleteFile, extractPublicId } = require("../utils/cloudinary");
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 const userRepository = require("../repositories/userRepository");
@@ -28,6 +28,12 @@ const loginUser = async (email, password) => {
   const user = await userRepository.findByEmail(email);
   if (!user) {
     const error = new Error("Credenciales incorrectas");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.authProvider === "google" && !user.password) {
+    const error = new Error("Esta cuenta usa Google para iniciar sesión");
     error.statusCode = 401;
     throw error;
   }
@@ -72,7 +78,18 @@ const deleteUser = async (userId) => {
     error.statusCode = 404;
     throw error;
   }
-
+  if (user.profileImage) {
+    const publicId = extractPublicId(user.profileImage);
+    if (publicId) {
+      await deleteFile(publicId);
+    }
+  }
+  if (user.bannerImage) {
+    const publicId = extractPublicId(user.bannerImage);
+    if (publicId) { 
+      await deleteFile(publicId);
+    }
+  }
   await userRepository.deleteOne(userId);
 };
 
@@ -92,19 +109,47 @@ const updateUser = async (userId, updateData) => {
 };
 
 const updateProfileImage = async (userId, fileObject) => {
-
   // 1. Borrar la foto vieja si existe (usando tu deleteFile)
   const user = await userRepository.findById(userId);
   if (user.profileImage) {
-    await deleteFile(user.profileImage);
+    const publicId = extractPublicId(user.profileImage);
+    if (publicId) {
+      await deleteFile(publicId);
+    }
   }
-
   // 2. Subir la nueva indicando la carpeta de perfiles
   const newImageUrl = await uploadFile(fileObject, "BLOG/IMAGES-PROFILE");
 
   // 3. Actualizar en la DB
   const updatedUser = await userRepository.updateById(userId, {
-    profileImage: newImageUrl
+    profileImage: newImageUrl,
+  });
+
+  return updatedUser;
+};
+
+const deleteProfileImage = async (userId) => {
+  const user = await userRepository.findById(userId);
+
+  if (!user) {
+    const error = new Error("Usuario no encontrado");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!user.profileImage) {
+    const error = new Error("El usuario no tiene foto de perfil");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const publicId = extractPublicId(user.profileImage);
+  if (publicId) {
+    await deleteFile(publicId);
+  }
+
+  const updatedUser = await userRepository.updateById(userId, {
+    profileImage: "",
   });
 
   return updatedUser;
@@ -120,7 +165,7 @@ const searchUsers = async (query) => {
 
 const getPublicProfile = async (userId) => {
   const user = await userRepository.findByIdPublic(userId);
-  
+
   if (!user) {
     const error = new Error("Usuario no encontrado");
     error.statusCode = 404;
@@ -132,27 +177,31 @@ const getPublicProfile = async (userId) => {
 
 const updateBanner = async (userId, fileObject) => {
   // 1. Borrar la imagen existente
-  const user = await userRepository.findById(userId)
+  const user = await userRepository.findById(userId);
 
-  if( user.bannerImage ){
-     await deleteFile(user.bannerImage)
+  if (user.bannerImage) {
+    const publicId = extractPublicId(user.bannerImage);
+    if (publicId) {
+      
+      await deleteFile(publicId);
+    }
   }
-   // 2. Subir la nueva indicando la carpeta de perfiles
+  // 2. Subir la nueva indicando la carpeta de perfiles
   const newImageBannerUrl = await uploadFile(fileObject, "BLOG/IMAGES-BANNER");
-  
+
   // 3. Actualizar en la DB
   const updatedBanner = await userRepository.updateById(userId, {
-    bannerImage: newImageBannerUrl
+    bannerImage: newImageBannerUrl,
   });
 
   return updatedBanner;
-
 };
 
 module.exports = {
   createUser,
   loginUser,
   updateProfileImage,
+  deleteProfileImage,
   getAllUsers,
   getAuthenticatedUser,
   deleteUser,

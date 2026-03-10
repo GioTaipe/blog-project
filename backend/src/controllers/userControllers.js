@@ -65,6 +65,17 @@ const updateProfileImage = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteProfileImage = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const updatedUser = await userService.deleteProfileImage(userId);
+
+  res.status(200).json({
+    message: "Foto de perfil eliminada con éxito",
+    user: updatedUser,
+  });
+});
+
 const searchUsers = asyncHandler(async (req, res) => {
   const { q } = req.query;
 
@@ -97,6 +108,7 @@ module.exports = {
   createUser,
   loginUser,
   updateProfileImage,
+  deleteProfileImage,
   getAllUsers,
   getAuthenticatedUser,
   deleteUser,

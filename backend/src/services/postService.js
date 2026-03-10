@@ -1,7 +1,16 @@
 const postRepository = require("../repositories/postRepository");
-const { uploadFile, deleteFile } = require("../utils/cloudinary");
+const { uploadFile, deleteFile, extractPublicId } = require("../utils/cloudinary");
+
+const POST_LIMIT_PER_USER = 5;
 
 const createPost = async (authorId, content, file) => {
+  const postCount = await postRepository.countByAuthor(authorId);
+  if (postCount >= POST_LIMIT_PER_USER) {
+    const error = new Error("Has alcanzado el limite de publicaciones en esta version Demo");
+    error.statusCode = 403;
+    throw error;
+  }
+
   const articleData = { content, authorId };
 
   if (file) {
@@ -19,9 +28,17 @@ const createPost = async (authorId, content, file) => {
   };
 };
 
-const getAllPost = async () => {
-  const articles = await postRepository.findAll();
-  return articles;
+const POSTS_PER_PAGE = 8;
+
+const getAllPost = async (page = 1) => {
+  const skip = (page - 1) * POSTS_PER_PAGE;
+  const posts = await postRepository.findAll(skip, POSTS_PER_PAGE + 1);
+
+  const hasMore = posts.length > POSTS_PER_PAGE;
+  return {
+    posts: hasMore ? posts.slice(0, POSTS_PER_PAGE) : posts,
+    hasMore,
+  };
 };
 
 const deletePost = async (id, userId) => {
@@ -40,9 +57,12 @@ const deletePost = async (id, userId) => {
     throw error;
   }
 
-  // Si hay archivo en S3, eliminarlo
+  // Si hay archivo en cloudinary, eliminarlo
   if (article.fileUrl) {
-    await deleteFile(article.fileUrl);
+    const publicId = extractPublicId(article.fileUrl);
+    console.log(publicId);
+    
+    await deleteFile(publicId);
   }
 
   // Eliminar artículo de DB

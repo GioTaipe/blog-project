@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <Navbar v-if="showNavbar" />
-    <v-main style="background-color: #F3F2EF;">
+    <v-main :style="{ backgroundColor: isLoginPage ? '#0a1628' : '#f4f7fe' }">
       <router-view />
     </v-main>
     <AppFooter v-if="showNavbar" />
@@ -18,9 +18,9 @@
   const route = useRoute()
   const auth = useAuthStore()
 
+  const isLoginPage = computed(() => route.path === '/Login')
+
   const showNavbar = computed(() => {
-    const isLoginPage = route.path === '/Login'
-    const isAuthenticated = auth.isLoggedIn
-    return !isLoginPage || isAuthenticated
+    return !isLoginPage.value || auth.isLoggedIn
   })
 </script>
