@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { createComment, deleteCommentApi } from '@/api/comments'
 import { createPost, deletePostApi, getPosts, toggleLike } from '@/api/posts'
+import { useAuthStore } from '@/stores/authStore'
 
 export const usePostStore = defineStore('posts', {
   state: () => ({
@@ -49,12 +50,24 @@ export const usePostStore = defineStore('posts', {
       }
     },
 
-    // Crear un nuevo post
+    // Crear un nuevo post (insercion local, sin refetch)
     async createPostAction (postContent, file) {
       this.publishing = true
       try {
-        await createPost({ content: postContent, file })
-        await this.fetchPosts()
+        const data = await createPost({ content: postContent, file })
+        const auth = useAuthStore()
+        const newPost = {
+          ...data.post,
+          authorId: {
+            _id: auth.userId,
+            name: auth.userName,
+            profileImage: auth.userProfileImage || '',
+          },
+          comments: [],
+          createdAt: new Date().toISOString(),
+          newComment: '',
+        }
+        this.posts.unshift(newPost)
       } catch (error) {
         throw error
       } finally {

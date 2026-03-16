@@ -7,6 +7,6 @@ const connectDB = require("./config/db");
 // Conectar a la base de datos antes de iniciar el servidor
 connectDB().then(() => {
   app.listen(process.env.PORT || 3001, () => {
-    console.log(`🚀 Servidor corriendo`);
+    console.log(`🚀 Servidor corriendo: `+process.env.PORT);
   });
 });

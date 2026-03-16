@@ -55,6 +55,14 @@
       <span class="feed-title">Publicaciones recientes</span>
     </div>
 
+    <!-- PUBLISHING PLACEHOLDER -->
+    <div v-if="publishing" class="post-card publishing-card">
+      <div class="publishing-content">
+        <v-progress-circular color="#1d5fd1" indeterminate size="24" width="2.5" />
+        <span class="publishing-text">Publicando...</span>
+      </div>
+    </div>
+
     <!-- LOADING -->
     <div v-if="loading" class="loading-state">
       <v-progress-circular color="#1d5fd1" indeterminate size="44" />
@@ -508,6 +516,18 @@
   font-family: 'Playfair Display', serif;
   font-size: 1.1rem; font-weight: 700;
   color: #0d1f3c;
+}
+
+/* ── Publishing placeholder ── */
+.publishing-card {
+  animation: slideIn .3s cubic-bezier(.4,0,.2,1) both;
+}
+.publishing-content {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 22px;
+}
+.publishing-text {
+  font-size: .9rem; font-weight: 500; color: #6b83b0;
 }
 
 /* ── States ── */
