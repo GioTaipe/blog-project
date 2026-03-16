@@ -2,8 +2,11 @@
   <main class="page">
     <!-- BANNER -->
     <div class="profile-banner" :style="bannerStyle">
+      <div v-if="uploadingBanner" class="banner-loader-overlay">
+        <v-progress-circular color="white" indeterminate size="36" width="3" />
+      </div>
       <div v-if="isOwner" class="banner-actions">
-        <button class="banner-upload-btn" @click="triggerBannerUpload">
+        <button class="banner-upload-btn" :disabled="uploadingBanner" @click="triggerBannerUpload">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
             <circle cx="12" cy="13" r="4"/>
@@ -17,10 +20,13 @@
     <div class="profile-card">
       <div class="profile-header">
         <div class="profile-avatar-wrap">
-          <div class="profile-avatar" :class="{ clickable: isOwner }" @click="isOwner && triggerPageImageUpload()">
+          <div class="profile-avatar" :class="{ clickable: isOwner && !uploadingAvatar }" @click="isOwner && !uploadingAvatar && triggerPageImageUpload()">
             {{ getInitials(user?.name) }}
             <img v-if="user?.profileImage" class="avatar-img" :src="user.profileImage" alt="" referrerpolicy="no-referrer" />
-            <div v-if="isOwner" class="avatar-camera-overlay">
+            <div v-if="uploadingAvatar" class="avatar-loader-overlay">
+              <v-progress-circular color="white" indeterminate size="32" width="3" />
+            </div>
+            <div v-else-if="isOwner" class="avatar-camera-overlay">
               <svg viewBox="0 0 24 24" width="28" height="28" stroke="white" stroke-width="2" fill="none">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                 <circle cx="12" cy="13" r="4"/>
@@ -255,6 +261,8 @@
   const pageImageInput = ref(null)
 
   const bannerInput = ref(null)
+  const uploadingAvatar = ref(false)
+  const uploadingBanner = ref(false)
 
   const visibleComments = ref({})
   const commenting = ref(false)
@@ -327,14 +335,17 @@
 
   const handleBannerChange = async (event) => {
     const file = event.target.files[0]
-    if (file) {
-      try {
-        const result = await updateBannerImage(file)
-        user.value.bannerImage = result.bannerImage || result.user?.bannerImage
-        showNotification('Banner actualizado')
-      } catch {
-        showNotification('Error al actualizar el banner', 'error', 'mdi-alert-circle')
-      }
+    if (!file) return
+    uploadingBanner.value = true
+    try {
+      const result = await updateBannerImage(file)
+      user.value.bannerImage = result.bannerImage || result.user?.bannerImage
+      showNotification('Banner actualizado')
+    } catch {
+      showNotification('Error al actualizar el banner', 'error', 'mdi-alert-circle')
+    } finally {
+      uploadingBanner.value = false
+      bannerInput.value.value = ''
     }
   }
 
@@ -424,6 +435,7 @@
   const handlePageImageChange = async (event) => {
     const file = event.target.files[0]
     if (!file) return
+    uploadingAvatar.value = true
     try {
       const result = await updateProfileImage(file)
       const newUrl = result.user?.profileImage || result.profileImage
@@ -434,6 +446,7 @@
     } catch {
       showNotification('Error al actualizar la foto', 'error', 'mdi-alert-circle')
     } finally {
+      uploadingAvatar.value = false
       pageImageInput.value.value = ''
     }
   }
@@ -535,6 +548,13 @@
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
 .banner-upload-btn:hover { background: white; transform: scale(1.08); }
+.banner-upload-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.banner-loader-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 5;
+}
 
 /* ── Profile card ── */
 .profile-card {
@@ -578,6 +598,12 @@
   opacity: 0; transition: 0.3s;
 }
 .profile-avatar.clickable:hover .avatar-camera-overlay { opacity: 1; }
+.avatar-loader-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
 
 /* ── Profile info ── */
 .profile-name {
