@@ -4,10 +4,15 @@ import { updateProfileImage, updateUser } from '@/api/user'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
-  }),
+  state: () => {
+    const raw = localStorage.getItem('user')
+    let user = null
+    try { user = raw ? JSON.parse(raw) : null } catch { user = null }
+    return {
+      token: localStorage.getItem('token') || null,
+      user,
+    }
+  },
   getters: {
     isLoggedIn: state => !!state.token,
     userId: state => state.user?._id || null,
