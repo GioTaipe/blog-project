@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
 })
+console.log(import.meta.env.VITE_API_BASE_URL);
 
 // Interceptor para Inyectar el Token
 api.interceptors.request.use(config => {
