@@ -2,4 +2,5 @@
 backend/node_modules/
 frontend/node_modules/
 # Ignorar archivos de entorno
-backend/src/.env
+backend/.env
+frontend/vuetify-project/.env

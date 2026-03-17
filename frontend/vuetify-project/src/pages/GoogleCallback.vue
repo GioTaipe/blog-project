@@ -46,10 +46,16 @@ onMounted(async () => {
   try {
     const redirectUri = `${window.location.origin}${GOOGLE_CALLBACK_PATH}`
     const data = await googleLoginWithCode(code, redirectUri)
+
+    if (!data?.token || !data?.user) {
+      throw new Error('Respuesta inválida del servidor')
+    }
+
     authStore.login(data.token, data.user)
     message.value = `Bienvenido, ${data.user.name}!`
     setTimeout(() => router.push('/Posts'), 1200)
   } catch (err) {
+    console.error('Google callback error:', err)
     error.value = true
     message.value = err.message || 'Error al iniciar sesión con Google'
     setTimeout(() => router.push('/Login'), 3000)
