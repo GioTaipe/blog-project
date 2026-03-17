@@ -27,6 +27,10 @@ const verifyGoogleToken = async (credential) => {
 };
 
 const exchangeCodeForToken = async (code, redirectUri) => {
+  if (!process.env.GOOGLE_CLIENT_SECRET) {
+    throw new Error("GOOGLE_CLIENT_SECRET no está configurado en el entorno");
+  }
+
   const oauthClient = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,

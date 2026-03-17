@@ -12,7 +12,9 @@ const googleLogin = asyncHandler(async (req, res) => {
       error.statusCode = 400;
       throw error;
     }
+    console.log("[Google Auth] Code flow - redirectUri:", redirectUri);
     result = await googleAuthService.googleLoginWithCode(code, redirectUri);
+    console.log("[Google Auth] Success - user:", result?.user?.email);
   } else if (credential) {
     result = await googleAuthService.googleLogin(credential);
   } else {
