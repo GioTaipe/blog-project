@@ -9,10 +9,10 @@ export async function loginUser (email, password) {
 }
 
 /**
- * Login con Google
+ * Login con Google (flujo redirect — authorization code)
  */
-export async function googleLogin (credential) {
-  const { data } = await api.post('/auth/google', { credential })
+export async function googleLoginWithCode (code, redirectUri) {
+  const { data } = await api.post('/auth/google', { code, redirectUri })
   return data
 }
 

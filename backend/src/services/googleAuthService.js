@@ -26,18 +26,32 @@ const verifyGoogleToken = async (credential) => {
   };
 };
 
-const googleLogin = async (credential) => {
+const exchangeCodeForToken = async (code, redirectUri) => {
+  const oauthClient = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri
+  );
+
+  const { tokens } = await oauthClient.getToken(code);
+
+  if (!tokens.id_token) {
+    const error = new Error("No se recibió id_token de Google");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return tokens.id_token;
+};
+
+const findOrCreateUser = async (googleUser) => {
   if (!process.env.SECRET_KEY) {
     throw new Error("CRITICAL: SECRET_KEY no está definida en el entorno");
   }
 
-  const googleUser = await verifyGoogleToken(credential);
-
-  // Buscar usuario existente por email
   let user = await userRepository.findByEmail(googleUser.email);
 
   if (user) {
-    // Si el usuario existe pero se registró con email/password, vincular Google
     if (!user.googleId) {
       user = await userRepository.updateById(user._id, {
         googleId: googleUser.googleId,
@@ -45,7 +59,6 @@ const googleLogin = async (credential) => {
       });
     }
   } else {
-    // Crear nuevo usuario con Google
     user = await userRepository.create({
       name: googleUser.name,
       email: googleUser.email,
@@ -72,4 +85,15 @@ const googleLogin = async (credential) => {
   };
 };
 
-module.exports = { googleLogin };
+const googleLogin = async (credential) => {
+  const googleUser = await verifyGoogleToken(credential);
+  return findOrCreateUser(googleUser);
+};
+
+const googleLoginWithCode = async (code, redirectUri) => {
+  const idToken = await exchangeCodeForToken(code, redirectUri);
+  const googleUser = await verifyGoogleToken(idToken);
+  return findOrCreateUser(googleUser);
+};
+
+module.exports = { googleLogin, googleLoginWithCode };

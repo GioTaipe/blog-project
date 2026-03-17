@@ -8,7 +8,7 @@ import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 // Componentes
 import Login from '@/pages/Login.vue'
-
+import GoogleCallback from '@/pages/GoogleCallback.vue'
 import Posts from '@/pages/Posts.vue'
 import Profile from '@/pages/Profile.vue'
 import PublicProfile from '@/pages/PublicProfile.vue'
@@ -17,6 +17,7 @@ import { useAuthStore } from '@/stores/authStore' // Importamos el store de Pini
 const routes = [
   { path: '/', redirect: '/Login' },
   { path: '/Login', name: '/Login', component: Login },
+  { path: '/auth/google/callback', name: 'GoogleCallback', component: GoogleCallback },
   {
     path: '/Posts',
     name: '/Posts',
