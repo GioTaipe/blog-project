@@ -55,7 +55,13 @@ const updateUser = asyncHandler(async (req, res) => {
 
 const updateProfileImage = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const fileObject = req.files.profilePic;
+  const fileObject = req.files?.profilePic;
+
+  if (!fileObject) {
+    const error = new Error("No se envió ninguna imagen de perfil");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const updatedUser = await userService.updateProfileImage(userId, fileObject);
 
@@ -95,6 +101,12 @@ const getPublicProfile = asyncHandler(async (req, res) => {
 const updateBanner = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const fileObject = req.files?.bannerImage;
+
+  if (!fileObject) {
+    const error = new Error("No se envió ninguna imagen de banner");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const updatedUser = await userService.updateBanner(userId, fileObject);
 
